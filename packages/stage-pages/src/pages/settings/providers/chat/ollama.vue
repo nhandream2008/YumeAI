@@ -1,0 +1,222 @@
+<script setup lang="ts">
+import type { RemovableRef } from '@vueuse/core'
+
+import {
+  ProviderAdvancedSettings,
+  ProviderBaseUrlInput,
+  ProviderBasicSettings,
+  ProviderSettingsContainer,
+  ProviderSettingsLayout,
+  ProviderValidationAlerts,
+} from '@proj-airi/stage-ui/components'
+import { useProviderValidation } from '@proj-airi/stage-ui/composables/use-provider-validation'
+import { useProviderConfigStore } from '@proj-airi/stage-ui/stores/providers/config'
+import { useProviderStore } from '@proj-airi/stage-ui/stores/providers/provider'
+import { FieldCombobox, FieldInput, FieldKeyValues } from '@proj-airi/ui'
+import { storeToRefs } from 'pinia'
+import { computed, onMounted, ref, watch } from 'vue'
+
+const providerId = 'ollama'
+const providersStore = useProviderStore()
+const providerStore = useProviderConfigStore()
+const { configs: providers } = storeToRefs(providerStore) as { configs: RemovableRef<Record<string, any>> }
+
+// Define computed properties for credentials
+const connectionMode = computed({
+  get: () => {
+    const persistedMode = providers.value[providerId]?.connectionMode
+    return typeof persistedMode === 'string' && persistedMode.toLowerCase().includes('web') ? 'web' : 'local'
+  },
+  set: (value: string) => {
+    if (!providers.value[providerId])
+      providers.value[providerId] = {}
+    providers.value[providerId].connectionMode = value.toLowerCase().includes('web') ? 'web' : 'local'
+  },
+})
+const apiKey = computed({
+  get: () => providers.value[providerId]?.apiKey || '',
+  set: (value) => {
+    if (!providers.value[providerId])
+      providers.value[providerId] = {}
+    providers.value[providerId].apiKey = value
+  },
+})
+const baseUrl = computed({
+  get: () => providers.value[providerId]?.baseUrl || 'http://localhost:11434/v1/',
+  set: (value) => {
+    if (!providers.value[providerId])
+      providers.value[providerId] = {}
+    providers.value[providerId].baseUrl = value
+  },
+})
+
+// Use the composable to get validation logic and state
+const {
+  t,
+  router,
+  providerMetadata,
+  isValidating,
+  isValid,
+  validationMessage,
+  handleResetSettings,
+  forceValid,
+  hasManualValidators,
+  isManualTesting,
+  manualTestPassed,
+  manualTestMessage,
+  runManualTest,
+} = useProviderValidation(providerId)
+
+const headers = ref<{ key: string, value: string }[]>(Object.entries(providers.value[providerId]?.headers || {}).map(([key, value]) => ({ key, value } as { key: string, value: string })) || [{ key: '', value: '' }])
+const thinkingMode = computed({
+  get: () => providers.value[providerId]?.thinkingMode || 'auto',
+  set: (value: string) => {
+    if (!providers.value[providerId])
+      providers.value[providerId] = {}
+    providers.value[providerId].thinkingMode = value
+  },
+})
+
+function addKeyValue(headers: { key: string, value: string }[], key: string, value: string) {
+  if (!headers)
+    return
+
+  headers.push({ key, value })
+}
+
+function removeKeyValue(index: number, headers: { key: string, value: string }[]) {
+  if (!headers)
+    return
+
+  if (headers.length === 1) {
+    headers[0].key = ''
+    headers[0].value = ''
+  }
+  else {
+    headers.splice(index, 1)
+  }
+}
+
+watch(headers, (headers) => {
+  if (headers.length > 0 && (headers.at(-1)!.key !== '' || headers.at(-1)!.value !== '')) {
+    headers.push({ key: '', value: '' })
+  }
+  if (!providers.value[providerId])
+    return
+  providers.value[providerId].headers = headers.filter(header => header.key !== '').reduce((acc, header) => {
+    acc[header.key] = header.value
+    return acc
+  }, {} as Record<string, string>)
+}, {
+  deep: true,
+  immediate: true,
+})
+
+onMounted(async () => {
+  await providersStore.initializeProvider(providerId)
+
+  // Initialize refs with current values
+  baseUrl.value = providers.value[providerId]?.baseUrl || providerMetadata.value?.defaultConfig.baseUrl || ''
+  connectionMode.value = providers.value[providerId]?.connectionMode || 'local'
+  apiKey.value = providers.value[providerId]?.apiKey || ''
+
+  // Initialize headers if not already set
+  if (!providers.value[providerId]?.headers) {
+    providers.value[providerId].headers = {}
+  }
+  if (headers.value.length === 0) {
+    headers.value = [{ key: '', value: '' }]
+  }
+
+  if (!providers.value[providerId].thinkingMode) {
+    providers.value[providerId].thinkingMode = 'auto'
+  }
+})
+</script>
+
+<template>
+  <ProviderSettingsLayout
+    :provider-name="providerMetadata?.localizedName"
+    :provider-icon-color="providerMetadata?.iconColor"
+    :on-back="() => router.back()"
+  >
+    <ProviderSettingsContainer>
+      <ProviderBasicSettings
+        :title="t('settings.pages.providers.common.section.basic.title')"
+        :description="t('settings.pages.providers.common.section.basic.description')"
+        :on-reset="handleResetSettings"
+      >
+        <FieldCombobox
+          v-model="connectionMode"
+          :label="t('settings.pages.providers.provider.ollama.fields.connection-mode.label')"
+          :description="t('settings.pages.providers.provider.ollama.fields.connection-mode.description')"
+          :options="[
+            { label: t('settings.pages.providers.provider.ollama.fields.connection-mode.options.local'), value: 'local' },
+            { label: t('settings.pages.providers.provider.ollama.fields.connection-mode.options.web'), value: 'web' },
+          ]"
+        />
+
+        <FieldInput
+          v-if="connectionMode === 'web'"
+          v-model="apiKey"
+          type="password"
+          :label="t('settings.pages.providers.provider.ollama.fields.api-key.label')"
+          :description="t('settings.pages.providers.provider.ollama.fields.api-key.description')"
+          :placeholder="t('settings.pages.providers.provider.ollama.fields.api-key.placeholder')"
+        />
+
+        <ProviderBaseUrlInput
+          v-else
+          v-model="baseUrl"
+          placeholder="http://localhost:11434/v1/"
+        />
+      </ProviderBasicSettings>
+
+      <ProviderAdvancedSettings :title="t('settings.pages.providers.common.section.advanced.title')">
+        <FieldCombobox
+          v-model="thinkingMode"
+          :label="t('settings.pages.providers.catalog.edit.config.common.fields.field.thinking-mode.label')"
+          :description="t('settings.pages.providers.catalog.edit.config.common.fields.field.thinking-mode.description')"
+          :options="[
+            { label: t('settings.pages.providers.catalog.edit.config.common.fields.field.thinking-mode.options.auto'), value: 'auto' },
+            { label: t('settings.pages.providers.catalog.edit.config.common.fields.field.thinking-mode.options.disable'), value: 'disable' },
+            { label: t('settings.pages.providers.catalog.edit.config.common.fields.field.thinking-mode.options.enable'), value: 'enable' },
+            { label: t('settings.pages.providers.catalog.edit.config.common.fields.field.thinking-mode.options.low'), value: 'low' },
+            { label: t('settings.pages.providers.catalog.edit.config.common.fields.field.thinking-mode.options.medium'), value: 'medium' },
+            { label: t('settings.pages.providers.catalog.edit.config.common.fields.field.thinking-mode.options.high'), value: 'high' },
+          ]"
+        />
+
+        <FieldKeyValues
+          v-model="headers"
+          :label="t('settings.pages.providers.common.section.advanced.fields.field.headers.label')"
+          :description="t('settings.pages.providers.common.section.advanced.fields.field.headers.description')"
+          :key-placeholder="t('settings.pages.providers.common.section.advanced.fields.field.headers.key.placeholder')"
+          :value-placeholder="t('settings.pages.providers.common.section.advanced.fields.field.headers.value.placeholder')"
+          @add="(key: string, value: string) => addKeyValue(headers, key, value)"
+          @remove="(index: number) => removeKeyValue(index, headers)"
+        />
+      </ProviderAdvancedSettings>
+
+      <ProviderValidationAlerts
+        :is-valid="isValid"
+        :is-validating="isValidating"
+        :validation-message="validationMessage"
+        :has-manual-validators="hasManualValidators"
+        :is-manual-testing="isManualTesting"
+        :manual-test-passed="manualTestPassed"
+        :manual-test-message="manualTestMessage"
+        :on-run-test="runManualTest"
+        :on-force-valid="forceValid"
+        :on-go-to-model-selection="() => router.push('/settings/modules/consciousness')"
+      />
+    </ProviderSettingsContainer>
+  </ProviderSettingsLayout>
+</template>
+
+<route lang="yaml">
+meta:
+  layout: settings
+  stageTransition:
+    name: slide
+</route>

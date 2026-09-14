@@ -1,0 +1,8 @@
+/**
+ * Global styles for @proj-airi/ui. Import once from the app entry stylesheet
+ * (e.g. `src/styles/main.css`) so CSS is not tied to JS side-effect imports.
+ */
+@import './fallback.css';
+@import './lamp-flicker.css';
+@import './glass-theme.css';
+@import './style.css';
