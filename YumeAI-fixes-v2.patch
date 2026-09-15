@@ -1,0 +1,143 @@
+diff --git a/apps/stage-web/src/pages/index.vue b/apps/stage-web/src/pages/index.vue
+--- a/apps/stage-web/src/pages/index.vue
++++ b/apps/stage-web/src/pages/index.vue
+@@ -1,1 +1,1 @@
+-const nekoLogoUrl = 'https://app.nekoai.is-a.dev/assets/logo-CDgTZ5L1.png'
++const yumeLogoUrl = 'https://app.nekoai.is-a.dev/assets/logo-CDgTZ5L1.png'
+@@ -22,2 +22,2 @@
+-          <img :src="nekoLogoUrl" alt="NekoAI" class="size-8 object-contain">
+-          <span class="text-xl font-700 tracking-tight">NekoAI</span>
++          <img :src="yumeLogoUrl" alt="YumeAI" class="size-8 object-contain">
++          <span class="text-xl font-700 tracking-tight">YumeAI</span>
+diff --git a/apps/stage-web/src/components/neko-sidebar.vue b/apps/stage-web/src/components/neko-sidebar.vue
+--- a/apps/stage-web/src/components/neko-sidebar.vue
++++ b/apps/stage-web/src/components/neko-sidebar.vue
+@@ -1,1 +1,1 @@
+-const nekoLogoUrl = 'https://app.nekoai.is-a.dev/assets/logo-CDgTZ5L1.png'
++const yumeLogoUrl = 'https://app.nekoai.is-a.dev/assets/logo-CDgTZ5L1.png'
+@@ -22,2 +22,2 @@
+-          <img :src="nekoLogoUrl" alt="NekoAI" class="size-8 object-contain">
+-          <span class="text-2xl text-glass-primary font-semibold leading-8 tracking-tight">NekoAI</span>
++          <img :src="yumeLogoUrl" alt="YumeAI" class="size-8 object-contain">
++          <span class="text-2xl text-glass-primary font-semibold leading-8 tracking-tight">YumeAI</span>
+diff --git a/packages/stage-layouts/src/layouts/settings.vue b/packages/stage-layouts/src/layouts/settings.vue
+--- a/packages/stage-layouts/src/layouts/settings.vue
++++ b/packages/stage-layouts/src/layouts/settings.vue
+@@ -1,1 +1,1 @@
+-      class="relative h-full max-h-[min(50rem,100%)] max-w-6xl w-full flex animate-glassRise overflow-hidden glass-tier-3 rounded-3xl motion-reduce:animate-none <md:rounded-none"
++      class="relative h-full max-h-[min(50rem,100%)] max-w-6xl w-full flex animate-glassRise overflow-hidden border border-white/15 bg-neutral-950/58 shadow-2xl shadow-black/25 backdrop-blur-2xl rounded-3xl motion-reduce:animate-none <md:rounded-none"
+@@ -22,1 +22,1 @@
+-        class="h-full w-64 flex shrink-0 flex-col gap-4 overflow-hidden border-r border-neutral-200/60 bg-neutral-500/[0.025] p-4 dark:border-neutral-800/60 <md:hidden"
++        class="h-full w-64 flex shrink-0 flex-col gap-4 overflow-hidden border-r border-white/10 bg-white/[0.035] p-4 backdrop-blur-xl <md:hidden"
+@@ -43,1 +43,1 @@
+-            <small class="block truncate text-[0.6875rem] text-glass-muted">NekoAI</small>
++            <small class="block truncate text-[0.6875rem] text-glass-muted">YumeAI</small>
+@@ -64,1 +64,1 @@
+-          class="flex shrink-0 items-center gap-3 border-b border-neutral-200/60 px-6 py-4 dark:border-neutral-800/60 <md:px-4"
++          class="flex shrink-0 items-center gap-3 border-b border-white/10 bg-white/[0.025] px-6 py-4 backdrop-blur-xl <md:px-4"
+diff --git a/packages/stage-layouts/src/components/Widgets/ChatArea.vue b/packages/stage-layouts/src/components/Widgets/ChatArea.vue
+--- a/packages/stage-layouts/src/components/Widgets/ChatArea.vue
++++ b/packages/stage-layouts/src/components/Widgets/ChatArea.vue
+@@ -1,16 +1,21 @@
+-          <PopoverContent
+-            side="top"
+-            :side-offset="8"
+-            :class="[
+-              'glass-tier-3 z-80 w-72 max-w-[18rem] flex flex-col gap-3 rounded-2xl p-4',
+-              'text-glass-primary',
+-            ]"
+-          >
+-            <HearingConfig
+-              v-model:auto-send="autoSendEnabled"
+-              :transcription="isListening"
+-              :granted="true"
+-              @toggle-transcription="() => isListening ? stopStreamingTranscription() : startStreamingTranscription()"
+-            />
+-          </PopoverContent>
++          <PopoverPortal>
++            <PopoverContent
++              side="top"
++              align="start"
++              :side-offset="8"
++              :collision-padding="12"
++              :class="[
++                'glass-tier-3 z-[10010] w-80 max-w-[calc(100vw-1.5rem)] flex flex-col gap-3 overflow-hidden rounded-2xl p-4 outline-none',
++                'text-glass-primary origin-bottom-left',
++                'motion-reduce:animate-none data-[state=closed]:animate-glassSink data-[state=open]:animate-glassRise',
++              ]"
++            >
++              <HearingConfig
++                v-model:auto-send="autoSendEnabled"
++                :transcription="isListening"
++                :granted="true"
++                @toggle-transcription="() => isListening ? stopStreamingTranscription() : startStreamingTranscription()"
++              />
++            </PopoverContent>
++          </PopoverPortal>
+         </PopoverRoot>
+diff --git a/packages/stage-ui/src/components/scenarios/dialogs/audio-input/hearing-config.vue b/packages/stage-ui/src/components/scenarios/dialogs/audio-input/hearing-config.vue
+--- a/packages/stage-ui/src/components/scenarios/dialogs/audio-input/hearing-config.vue
++++ b/packages/stage-ui/src/components/scenarios/dialogs/audio-input/hearing-config.vue
+@@ -1,1 +1,1 @@
+-  <div class="space-y-2">
++  <div class="min-w-0 space-y-2 overflow-hidden">
+@@ -22,2 +22,2 @@
+-    <div class="flex flex-col items-center justify-center py-2">
+-      <div class="relative h-28 w-28 select-none">
++    <div class="flex flex-col items-center justify-center overflow-hidden px-4 py-2">
++      <div class="relative h-32 w-32 shrink-0 select-none">
+@@ -44,1 +44,1 @@
+-      <div class="mt-3 h-1" />
++      <div class="h-2" />
+diff --git a/packages/stage-ui/src/components/scenarios/providers/speech-playground.vue b/packages/stage-ui/src/components/scenarios/providers/speech-playground.vue
+--- a/packages/stage-ui/src/components/scenarios/providers/speech-playground.vue
++++ b/packages/stage-ui/src/components/scenarios/providers/speech-playground.vue
+@@ -1,1 +1,2 @@
+ const selectedVoice = ref('')
++const customVoiceId = ref('')
+@@ -22,6 +22,18 @@
+ const voiceOptions = computed(() => {
+-  return props.availableVoices.map(voice => ({
++  const options = props.availableVoices.map(voice => ({
+     value: voice.id,
+     label: voice.name,
+   }))
++
++  const voiceId = customVoiceId.value.trim()
++  if (voiceId && !options.some(option => option.value === voiceId))
++    options.unshift({ value: voiceId, label: `Custom · ${voiceId}` })
++
++  return options
+ })
++
++function applyCustomVoiceId() {
++  const voiceId = customVoiceId.value.trim()
++  if (voiceId)
++    selectedVoice.value = voiceId
++}
+@@ -69,2 +69,25 @@
+         layout="horizontal"
+       />
++
++      <div :class="['rounded-xl border border-neutral-200/70 bg-white/35 p-3 backdrop-blur-md', 'dark:border-white/10 dark:bg-white/[0.035]']">
++        <label class="mb-2 block text-sm text-neutral-600 font-medium dark:text-neutral-300" for="custom-voice-id">
++          Custom Voice ID
++        </label>
++        <div class="flex gap-2 <sm:flex-col">
++          <input
++            id="custom-voice-id"
++            v-model="customVoiceId"
++            class="min-w-0 flex-1 rounded-lg border border-neutral-200/80 bg-white/55 px-3 py-2 text-sm outline-none backdrop-blur-md transition-colors focus:border-primary-400 dark:border-white/10 dark:bg-black/20"
++            autocomplete="off"
++            placeholder="Paste an ElevenLabs Voice ID"
++            @keydown.enter.prevent="applyCustomVoiceId"
++          >
++          <button
++            class="rounded-lg bg-primary-500/85 px-4 py-2 text-sm text-white font-medium transition-all hover:bg-primary-500 active:scale-95 motion-reduce:transform-none"
++            :disabled="!customVoiceId.trim()"
++            @click="applyCustomVoiceId"
++          >
++            Use voice
++          </button>
++        </div>
++      </div>

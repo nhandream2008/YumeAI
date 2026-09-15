@@ -1,0 +1,15 @@
+e71dc238cb287f58eb2b3dc684368d7a340d3795f1fbd565041904d160130bbe  ./README-VI.txt
+74ef7751aa4c9fc4ea6da96d9c8efe3d90244b090dd7eb8d1bcbc60ed141dde8  ./apps/stage-web/public/yumeai-logo.png
+96bf86c1c2ba8375b0f468e2cc3811ee660348b411561c975877a9a54a5a3d58  ./apps/stage-web/src/App.vue
+efd93781b59fe98d6e67e93b3df0325f063a344bf9cba63a60c08d44e1603f48  ./apps/stage-web/src/components/neko-sidebar.vue
+4ceea6b4c4c513c9a085cac650433c4868b2ef3acfa612bfaf3d4e9283a157ea  ./apps/stage-web/src/pages/index.vue
+bbaf0c444610210ce40be54ecd7fbba76c2cf867ac001147f57e21e4c4898af0  ./packages/i18n/src/locales/en/settings.yaml
+897f56a7a691711c8891b8d80dc0245dd60e4c21e5c959da8afbad97786f9cbf  ./packages/i18n/src/locales/vi/settings.yaml
+68deea3bdea132b72d9120cbfbf5e8644fed0527ae481d40945c3d1977201733  ./packages/stage-layouts/src/components/Layouts/InteractiveArea/Actions/About.vue
+8a8984d7fec99e1c4973dcfdda1d9048e26c0c24b8951155641d7d37fa5cb30a  ./packages/stage-layouts/src/components/Widgets/ChatArea.vue
+132181991d13c25cca4394f1e618e8933683f52168b2766d30efbfa414abd1ec  ./packages/stage-layouts/src/layouts/settings.vue
+255613a2f6014d29422a78ee8e58abc8af2bab45515fa49d37f650cdd486620b  ./packages/stage-pages/src/pages/settings/models/index.vue
+3be62efed155d46066d89eba40af8860b0906dca49d6034535c58fc72c0eeca2  ./packages/stage-pages/src/pages/settings/providers/speech/elevenlabs.vue
+f0548e5bc71011378ccd99fc14714059597edf56351d95f319ede0973f8b9f35  ./packages/stage-ui/src/components/scenarios/dialogs/audio-input/hearing-config.vue
+7bd8c6fa1c7f7dd2fb779bba2d54c0f065728575b43ca11ffe734614ed4a1d3c  ./packages/stage-ui/src/components/scenarios/providers/speech-playground.vue
+388a296cdeab17f87879b0e3c4b654b9d29e6b274b91bdccac12e9d88e246ca8  ./packages/stage-ui/src/stores/modules/speech.ts
